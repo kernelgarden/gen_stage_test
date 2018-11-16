@@ -4,8 +4,7 @@ defmodule DemandHandling.Consumer do
   require Logger
 
   @min_demand 1
-  @max_demand 2
-
+  @max_demand 4
 
   def start_link(), do: start_link([])
   def start_link(_), do: GenStage.start_link(__MODULE__, :ok)
@@ -27,19 +26,20 @@ defmodule DemandHandling.Consumer do
     {:automatic, Map.put(state, :subscription, from)}
   end
 
-  def handle_info(:init_ask, %{subscription: subscription} = state) do
-    GenStage.ask(subscription, @max_demand)
-
-    {:noreply, [], state}
-  end
+  # def handle_info(:init_ask, %{subscription: subscription} = state) do
+  #  GenStage.ask(subscription, @max_demand)
+  #
+  #  {:noreply, [], state}
+  # end
   def handle_info(_, state), do: {:noreply, [], state}
 
   def handle_events(events, _from, %{subscription: subscription} = state)
-    when is_list(events)
-  do
-    IO.puts("Received Msg From #{inspect subscription} - #{inspect events}")
+      when is_list(events) do
+    IO.puts("Received #{Enum.count(events)} msgs")
+    # IO.puts("Received Msg From #{inspect subscription} - #{inspect events}")
 
     {:noreply, [], state}
   end
+
   def handle_events(_events, _from, state), do: {:noreply, [], state}
 end

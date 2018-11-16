@@ -25,9 +25,10 @@ defmodule DemandHandling.Producer do
   end
 
   defp dispatch_events(%{events: events, events_count: events_count, demand: demand} = state)
-    when events_count >= demand
-  do
+       when events_count >= demand do
     {events_to_dispatch, remaining_events} = Enum.split(events, demand)
+
+    # IO.puts("dispatch #{demand} msgs.")
 
     new_state =
       state
@@ -39,8 +40,7 @@ defmodule DemandHandling.Producer do
   end
 
   defp dispatch_events(%{events: events, events_count: events_count, demand: demand} = state)
-    when events_count < demand
-  do
+       when events_count < demand do
     events = events ++ fetch_events(demand)
 
     state
